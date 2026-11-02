@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { LANGUAGES, useLanguage } from '../i18n';
@@ -6,8 +7,10 @@ export default function Layout({ children }) {
   const { user, logout } = useAuth();
   const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function onLogout() {
+    setMenuOpen(false);
     logout();
     navigate('/login');
   }
@@ -16,7 +19,18 @@ export default function Layout({ children }) {
     <div>
       <header className="topbar">
         <Link to="/" className="brand">RentAasan</Link>
-        <nav className="nav">
+        {user && (
+          <button
+            type="button"
+            className="menu-btn"
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            &#9776;
+          </button>
+        )}
+        <nav className={`nav${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)}>
           {user?.role === 'landlord' && (
             <>
               <Link to="/landlord">{t('dashboard')}</Link>
